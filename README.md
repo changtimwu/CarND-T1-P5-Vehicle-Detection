@@ -1,4 +1,4 @@
-# Vehicle Detection
+# CarND Project 5: Vehicle Detection
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 In this project, your goal is to write a software pipeline to detect vehicles in a video (start with the test_video.mp4 and later implement on full project_video.mp4), but the main output or product we want you to create is a detailed writeup of the project.  Check out the [writeup template](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup.
@@ -73,37 +73,52 @@ With the method and settings described above, the following objects are detected
 | ![Test 6](test_images/test6.jpg) | ![Output 6](output_images/test6.jpg) |
 
 
+The annotated project video can be viewed on Youtube as linked below or directly downloaded from this repository [here](output_videos/project_video.mp4)
+
+[![Project Video Result on Youtube](http://img.youtube.com/vi/88UvIBJ19gU/0.jpg)](http://www.youtube.com/watch?v=88UvIBJ19gU)
 
 
+## Own Video
 
-## Challenge Video
+I was also curious to see how my solution performs on videos I recorded myself (on a motorbike).
 
-In this project, your goal is to write a software pipeline to detect vehicles in a video (start with the test_video.mp4 and later implement on full project_video.mp4), but the main output or product we want you to create is a detailed writeup of the project.  Check out the [writeup template](https://github.com/udacity/CarND-Vehicle-Detection/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup.  
+Here are a few annotated sample images:
 
-Creating a great writeup:
+![Junction](examples/loth.jpg)
+![Tram](examples/bus.jpg)
+![Another Junction](examples/bridge.jpg)
+
+
+I additionally uploaded two more videos into this repository:
+
+1. [my_video_1.mp4](output_videos/my_video_1.mp4)
+1. [my_video_2.mp4](output_videos/my_video_2.mp4)
+
+
+# Analysis
+
+In general the deep learning approach to solving the vehicle detection problem seems very elegant compared to the manual crafting of features using OpenCV in combination with an SVM classifier. The latter not only requires a lot of parameter tuning but also is much slower and cannot be considered a "real time" solution. Although this comparison is not entirely fair, because the SSD is accelerated by using a GPU. Speeding up the HOG / SVM solution requires more thought and manual splitting of the algorithm into parallelizable parts.
+
+All in all, the results above are very satisfying, but the SSD, too, has room for improvement. I used pre-trained weights, but I think this part could be improved as the network has difficulties detecting objects exceeding or not reaching certain dimensions. As can be seen in my own test videos, further away cars are mostly not detected because, after shrinking the frame to 300x300 pixels, they don't contain enough features anymore to be detected. The same happens when a car almost completely fills the frame. Therefore I suspect training with more various scales of objects would help mitigate this problem.
+
+Another issue I observed was that object detection works less reliably when the recording angle is tilted. This is an issue with recording on a motorbike. In curves the bike and therefore the video recording is tilted. This is obviously not a problem for cars as the camera is fixed to the car and always recorded horizontally. But it was nevertheless interesting to observe. Training with augmented rotated images would likely solve this.
+
+## Outlook
+
+End of 2016 a revised version of YOLO ([YOLO 9000](https://arxiv.org/abs/1612.08242)) was published, which claims to have even higher accuracy and also higher fps-rates than SSD. This could be a nice improvement for this project, which I may investigate in the future.
+
+# Acknowledgements
+
+I would like to thank @rykov8 and @oarriaga for their Keras ports of SSD, which I used in this project.
+
+# References
+
+* [Towards a real-time vehicle detection: SSD multibox approach](https://chatbotslife.com/towards-a-real-time-vehicle-detection-ssd-multibox-approach-2519af2751c)
+* [SSD: Single Shot MultiBox Detector](https://arxiv.org/abs/1512.02325)
+* [SSD in Keras 2](https://github.com/oarriaga/single_shot_multibox_detector)
+* [SSD in Keras 1](https://github.com/rykov8/ssd_keras)
+* [YOLO](https://pjreddie.com/darknet/yolo/)
+* [YOLO 9000](https://arxiv.org/abs/1612.08242)
+* [YOLOv2 in Keras/TensorFlow](https://github.com/allanzelener/YAD2K)
 ---
-A great writeup should include the rubric points as well as your description of how you addressed each point.  You should include a detailed description of the code used in each step (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
-
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
-
-You can submit your writeup in markdown or use another method and submit a pdf instead.
-
-The Project
----
-
-The goals / steps of this project are the following:
-
-* Perform a Histogram of Oriented Gradients (HOG) feature extraction on a labeled training set of images and train a classifier Linear SVM classifier
-* Optionally, you can also apply a color transform and append binned color features, as well as histograms of color, to your HOG feature vector. 
-* Note: for those first two steps don't forget to normalize your features and randomize a selection for training and testing.
-* Implement a sliding-window technique and use your trained classifier to search for vehicles in images.
-* Run your pipeline on a video stream (start with the test_video.mp4 and later implement on full project_video.mp4) and create a heat map of recurring detections frame by frame to reject outliers and follow detected vehicles.
-* Estimate a bounding box for vehicles detected.
-
-Here are links to the labeled data for [vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/vehicles.zip) and [non-vehicle](https://s3.amazonaws.com/udacity-sdc/Vehicle_Tracking/non-vehicles.zip) examples to train your classifier.  These example images come from a combination of the [GTI vehicle image database](http://www.gti.ssr.upm.es/data/Vehicle_database.html), the [KITTI vision benchmark suite](http://www.cvlibs.net/datasets/kitti/), and examples extracted from the project video itself.   You are welcome and encouraged to take advantage of the recently released [Udacity labeled dataset](https://github.com/udacity/self-driving-car/tree/master/annotations) to augment your training data.  
-
-Some example images for testing your pipeline on single frames are located in the `test_images` folder.  To help the reviewer examine your work, please save examples of the output from each stage of your pipeline in the folder called `ouput_images`, and include them in your writeup for the project by describing what each image shows.    The video called `project_video.mp4` is the video your pipeline should work well on.  
-
-**As an optional challenge** Once you have a working pipeline for vehicle detection, add in your lane-finding algorithm from the last project to do simultaneous lane-finding and vehicle detection!
-
-**If you're feeling ambitious** (also totally optional though), don't stop there!  We encourage you to go out and take video of your own, and show us how you would implement this project on a new video!
+* [Evolving Boxes for Fast Vehicle Detection](https://arxiv.org/abs/1702.00254)
